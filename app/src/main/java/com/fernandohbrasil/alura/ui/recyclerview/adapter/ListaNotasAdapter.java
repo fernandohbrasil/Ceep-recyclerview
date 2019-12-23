@@ -13,6 +13,7 @@ import com.fernandohbrasil.alura.R;
 import com.fernandohbrasil.alura.model.Nota;
 import com.fernandohbrasil.alura.ui.recyclerview.adapter.listener.OnItemClickListener;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.NotaViewHolder> {
@@ -51,8 +52,9 @@ public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.No
 
     public void altera(int posicao, Nota nota) {
         notas.set(posicao, nota);
-        notifyDataSetChanged();
+        notifyItemChanged(posicao);
     }
+
 
     class NotaViewHolder extends RecyclerView.ViewHolder {
         private final TextView titulo;
@@ -71,7 +73,7 @@ public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.No
             });
         }
 
-        void vincula(Nota nota){
+        void vincula(Nota nota) {
             this.nota = nota;
             preencheCampos(nota);
         }
@@ -82,8 +84,18 @@ public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.No
         }
     }
 
-    public void adiciona(Nota nota){
+    public void adiciona(Nota nota) {
         notas.add(nota);
         notifyDataSetChanged();
+    }
+
+    public void remove(int posicao) {
+        notas.remove(posicao);
+        notifyItemRemoved(posicao);
+    }
+
+    public void troca(int posicaoInicial, int posicaoFinal) {
+        Collections.swap(notas, posicaoInicial, posicaoFinal);
+        notifyItemMoved(posicaoInicial, posicaoFinal);
     }
 }

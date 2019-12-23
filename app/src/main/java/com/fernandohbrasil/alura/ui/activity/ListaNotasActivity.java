@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fernandohbrasil.alura.R;
@@ -16,6 +16,7 @@ import com.fernandohbrasil.alura.dao.NotaDAO;
 import com.fernandohbrasil.alura.model.Nota;
 import com.fernandohbrasil.alura.ui.recyclerview.adapter.ListaNotasAdapter;
 import com.fernandohbrasil.alura.ui.recyclerview.adapter.listener.OnItemClickListener;
+import com.fernandohbrasil.alura.ui.recyclerview.helper.callback.NotaItemTouchHelperCallback;
 
 import java.util.List;
 
@@ -28,12 +29,15 @@ import static com.fernandohbrasil.alura.ui.activity.NotaActivityConstantes.POSIC
 public class ListaNotasActivity extends AppCompatActivity {
 
 
+    public static final String TITPO_APPBAR = "Notas";
     private ListaNotasAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_notas);
+
+        setTitle(TITPO_APPBAR);
 
         List<Nota> todasNotas = pegaTodasNotas();
         configuraRecyclerView(todasNotas);
@@ -58,10 +62,6 @@ public class ListaNotasActivity extends AppCompatActivity {
 
     private List<Nota> pegaTodasNotas() {
         NotaDAO dao = new NotaDAO();
-        for (int i = 0; i < 10; i++) {
-            dao.insere(new Nota("Título " + (i + 1),
-                    "Descricao " + (i + 1)));
-        }
         return dao.todos();
     }
 
@@ -81,10 +81,6 @@ public class ListaNotasActivity extends AppCompatActivity {
 
                 if (ehPosicaoValida(posicaoRecebida)) {
                     altera(notaRecebida, posicaoRecebida);
-                } else {
-                    Toast.makeText(this,
-                            "Ocorreu um problema na alteracao da nota",
-                            Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -119,8 +115,10 @@ public class ListaNotasActivity extends AppCompatActivity {
     }
 
     private void configuraRecyclerView(List<Nota> todasNotas) {
-        RecyclerView listaNota = findViewById(R.id.lista_notas_recyclerview);
-        configuraAdapter(todasNotas, listaNota);
+        RecyclerView listaNotas = findViewById(R.id.lista_notas_recyclerview);
+        configuraAdapter(todasNotas, listaNotas);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new NotaItemTouchHelperCallback(adapter));
+        itemTouchHelper.attachToRecyclerView(listaNotas);
     }
 
     private void configuraAdapter(List<Nota> todasNotas, final RecyclerView listaNota) {
